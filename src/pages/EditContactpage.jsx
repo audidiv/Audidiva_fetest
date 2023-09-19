@@ -51,7 +51,7 @@ const EditContactpage = () => {
             <form onSubmit={handleSubmit} style={{marginTop: "20px"}}>
                 <div className="card">
                     <div className="card-header" style={{ textAlign: 'left' }}>
-                        <h2>Add Contact</h2>
+                        <h2>Edit Contact</h2>
                     </div>
                     <div className="card-body" style={{ textAlign: 'left' }}>
                         <div className="row">

@@ -10,7 +10,7 @@ class HomePages extends Component {
   render() {
     return (
       <div>
-        <TableContactComponent contacts={this.props.contacts}/>
+        <TableContactComponent />
       </div>
     )
   }
