@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, Container } from 'react-bootstrap';
+import { Container, Modal } from 'react-bootstrap';
 import ButtonComponent from '../components/ButtonComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
@@ -11,8 +11,6 @@ const EditContactpage = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  let alertFailed = 'none';
-
   const data = {
     firstName: '',
     lastName: '',
@@ -20,10 +18,15 @@ const EditContactpage = () => {
     photo: ''
   }
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [age, setAge] = useState('');
-  const [photo, setPhoto] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [age, setAge] = useState('');
+    const [photo, setPhoto] = useState('');
+    const [modal, setModal] = useState(false);
+
+    const toggleModal = () => {
+        setModal(true);
+    }
 
   function handleSubmit(event) {
       event.preventDefault();
@@ -34,13 +37,44 @@ const EditContactpage = () => {
       
       axios.put(`https://contact.herokuapp.com/contact/${params.id}`, data)
         .then(res => navigate('/'))
-        .catch(err => alertFailed="block");
+        .catch(err => toggleModal());
   }
+
+  const uploadImage = async (e) => {
+    const file = e.target.files[0];
+    const base64 = await convertImageToBase64(file);
+    setPhoto(base64);
+    }
+
+    const convertImageToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (err) => {
+                reject(err);
+            };
+        });
+    }
 
   return (
     <div>
+        <Modal
+            size="sm"
+            show={modal}
+            onHide={() => setModal(false)}
+            aria-labelledby="example-modal-sizes-title-sm"
+        >
+            <Modal.Header closeButton>
+            <Modal.Title id="example-modal-sizes-title-sm">
+                Failed Update Contact
+            </Modal.Title>
+            </Modal.Header>
+        </Modal>
         <Container>
-          <Alert variant='danger' style={{display: alertFailed}}>Failed delete contact</Alert>
             <br/>
             <ButtonComponent
                 btnStyle="btn-dark"
@@ -87,8 +121,8 @@ const EditContactpage = () => {
                                     <label>Photo</label>
                                     <input 
                                         className="form-control"
-                                        value={photo}
-                                        onChange={(e) => setPhoto(e.target.value)}/>
+                                        type='file'
+                                            onChange={(e) => uploadImage(e)}/>
                                 </div>
                             </div>
                         </div>

@@ -29,13 +29,3 @@ export const getContact = (id) => {
           });
     }
 }
-
-export const addContact = async (contact) => {
-    axios.post(`${urlOrigin}/contact`, contact)
-        .then(res => {
-            return res.data;
-        })
-        .catch(err => {
-            console.log(`error add contact: ${err.response.status}`)
-        });
-}

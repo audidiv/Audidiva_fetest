@@ -10,7 +10,6 @@ const mapStateToProps = (state) => {
 };
 
 const TableContactDetailComponent = (props) => {
-    console.log(props);
   return (
     <div>
         {props.getContactDetail ?

@@ -1,13 +1,14 @@
 import React from 'react'
 import { useState } from 'react';
-import { Container } from 'react-bootstrap';
-import { addContact } from '../api/contactAPI';
+import { Container, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons';
 import ButtonComponent from '../components/ButtonComponent';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AddContactPage = (props) => {
+    console.log('render');
 
     const navigate = useNavigate();
 
@@ -22,6 +23,11 @@ const AddContactPage = (props) => {
     const [lastName, setLastName] = useState('');
     const [age, setAge] = useState('');
     const [photo, setPhoto] = useState('');
+    const [modal, setModal] = useState(false);
+
+    const toggleModal = () => {
+        setModal(true);
+    }
 
     function handleSubmit(event) {
         event.preventDefault();
@@ -29,16 +35,50 @@ const AddContactPage = (props) => {
         data.lastName = lastName;
         data.age = parseInt(age);
         data.photo = photo;
-        console.log(data);
-        addContact(data)
+
+        axios.post(`https://contact.herokuapp.com/contact`, data)
             .then(res => {
-                navigate('/')
+                navigate('/');
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                toggleModal();
+            });
+    }
+
+    const uploadImage = async (e) => {
+        const file = e.target.files[0];
+        const base64 = await convertImageToBase64(file);
+        setPhoto(base64);
+    }
+
+    const convertImageToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (err) => {
+                reject(err);
+            };
+        });
     }
 
     return (
         <div>
+            <Modal
+                size="sm"
+                show={modal}
+                onHide={() => setModal(false)}
+                aria-labelledby="example-modal-sizes-title-sm"
+            >
+                <Modal.Header closeButton>
+                <Modal.Title id="example-modal-sizes-title-sm">
+                    Failed Add Contact
+                </Modal.Title>
+                </Modal.Header>
+            </Modal>
             <Container>
                 <br/>
                 <ButtonComponent
@@ -86,8 +126,8 @@ const AddContactPage = (props) => {
                                         <label>Photo</label>
                                         <input 
                                             className="form-control"
-                                            value={photo}
-                                            onChange={(e) => setPhoto(e.target.value)}/>
+                                            type='file'
+                                            onChange={(e) => uploadImage(e)}/>
                                     </div>
                                 </div>
                             </div>

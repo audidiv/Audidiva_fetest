@@ -23,7 +23,6 @@ const mapDispatchToProps = (dispatch) => {
 let alertFailed = 'none';
 
 const TableContactComponent = (props) => {
-    console.log("render");
 
     const [deleteContact, setDeleteContact] = useState('');
 
@@ -34,7 +33,6 @@ const TableContactComponent = (props) => {
                     console.log(res.data);
                 })
                 .catch(err => {
-                    console.error(`error delete contact: ${err.response.status}`);
                     alertFailed="block"
                 });
         }
